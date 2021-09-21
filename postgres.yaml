@@ -43,6 +43,7 @@ spec:
             - mountPath: /var/lib/postgresql/data
               name: pg-data
       volumes:
-        - name: pg-data
-          emptyDir: {}
+        - hostPath:
+            path: "/data/k8s-data/kong"
+          name: pg-data
 

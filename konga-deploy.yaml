@@ -1,0 +1,61 @@
+---
+#deploy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-konga
+  namespace: kong
+spec:
+  selector:
+    matchLabels:
+      app: kong-konga
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kong-konga
+    spec:
+      #inodeSelector:
+       # node: worker
+      containers:
+      - name: kong-konga
+        image: pantsel/konga:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_ADAPTER
+          value: postgres
+        - name: DB_HOST
+        #服务名.命名空间
+          value: postgres.kong.svc
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: kong 
+        - name: DB_DATABASE
+          value: konga
+        - name: DB_PASSWORD
+          value: "kong"  #注意修改
+        - name: NODE_ENV
+          #value: production
+          value: development
+        - name: TZ
+          value: Asia/Shanghai
+        ports:
+        - containerPort: 1337
+---
+#service
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-konga
+  namespace: kong
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 1337
+    nodePort: 31337
+  type: NodePort
+  selector:
+    app: kong-konga
+---

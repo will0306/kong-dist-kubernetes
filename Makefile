@@ -25,13 +25,16 @@ run_cassandra: k8s_setup
 	kubectl apply -f cassandra-statefulset.yaml
 	kubectl -n kong apply -f kong-control-plane-cassandra.yaml
 	kubectl -n kong apply -f kong-ingress-data-plane-cassandra.yaml
+	kubectl -n kong apply -f konga-deploy.yaml
 
 run_postgres: k8s_setup
 	kubectl -n kong apply -f postgres.yaml
 	kubectl -n kong apply -f kong-control-plane-postgres.yaml
 	kubectl -n kong apply -f kong-ingress-data-plane-postgres.yaml
+	kubectl -n kong apply -f konga-deploy.yaml
 
 cleanup:
+	-kubectl -n kong delete -f konga-deploy.yaml
 	-kubectl -n kong delete -f cassandra-service.yaml
 	-kubectl -n kong delete -f cassandra-statefulset.yaml
 	-kubectl -n kong delete -f postgres.yaml
